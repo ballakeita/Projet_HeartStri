@@ -8,7 +8,6 @@ import partie.Joueur;
 import partie.Hero;
 import partie.TypeHero;
 
-
 public class Main_JeuComplet {
 
     public static void main(String[] args) {
@@ -76,8 +75,21 @@ public class Main_JeuComplet {
         } else {
             System.out.println("\n⚔️ " + joueur.getPseudo() + ", choisissez un serviteur pour attaquer :");
             joueur.getPlateau().afficherPlateau();
-            System.out.print("Numéro du serviteur : ");
-            int atk = scanner.nextInt() - 1;
+
+            int atk = -1;
+            while (atk < 0 || atk >= joueur.getPlateau().getServiteurs().size()) {
+                System.out.print("Numéro du serviteur : ");
+                if (scanner.hasNextInt()) {
+                    atk = scanner.nextInt() - 1; // index 0-based
+                    scanner.nextLine(); // consommer la fin de ligne
+                    if (atk < 0 || atk >= joueur.getPlateau().getServiteurs().size()) {
+                        System.out.println("❌ Numéro hors plage, veuillez réessayer.");
+                    }
+                } else {
+                    System.out.println("❌ Veuillez entrer un nombre entier valide.");
+                    scanner.nextLine(); // consommer entrée incorrecte
+                }
+            }
 
             Serviteur attaquant = joueur.getPlateau().getServiteurs().get(atk);
 
@@ -88,8 +100,21 @@ public class Main_JeuComplet {
             } else {
                 System.out.println("Cible sur le plateau de " + adversaire.getPseudo() + " :");
                 adversaire.getPlateau().afficherPlateau();
-                System.out.print("Numéro de la cible : ");
-                int cible = scanner.nextInt() - 1;
+
+                int cible = -1;
+                while (cible < 0 || cible >= adversaire.getPlateau().getServiteurs().size()) {
+                    System.out.print("Numéro de la cible : ");
+                    if (scanner.hasNextInt()) {
+                        cible = scanner.nextInt() - 1;
+                        scanner.nextLine();
+                        if (cible < 0 || cible >= adversaire.getPlateau().getServiteurs().size()) {
+                            System.out.println("❌ Numéro hors plage, veuillez réessayer.");
+                        }
+                    } else {
+                        System.out.println("❌ Veuillez entrer un nombre entier valide.");
+                        scanner.nextLine();
+                    }
+                }
 
                 Serviteur defenseur = adversaire.getPlateau().getServiteurs().get(cible);
                 Combat.lancerCombat(attaquant, defenseur);
@@ -112,21 +137,25 @@ public class Main_JeuComplet {
             System.out.print("Entrez le numéro du héros : ");
             if (scanner.hasNextInt()) {
                 choix = scanner.nextInt();
+                scanner.nextLine();
+                if (choix < 1 || choix > types.length) {
+                    System.out.println("❌ Numéro hors plage, veuillez réessayer.");
+                }
             } else {
-                scanner.next();
+                System.out.println("❌ Veuillez entrer un nombre entier valide.");
+                scanner.nextLine();
             }
         }
-        scanner.nextLine();
         return types[choix - 1];
     }
 
     public static void initialiserDeck(Joueur joueur) {
         Deck deck = joueur.getDeck();
-        deck.ajouterCarte(new Serviteur("Loup Alpha", 2, 3, 60));
-        deck.ajouterCarte(new Serviteur("Yéti Grincheux", 4, 4, 60));
-        deck.ajouterCarte(new Serviteur("Soldat d'élite", 3, 3, 50));
-        deck.ajouterCarte(new Serviteur("Golem de pierre", 5, 5, 80));
-        deck.ajouterCarte(new Serviteur("Mage Sinistre", 3, 5, 40));
+        deck.ajouterCarte(new Serviteur("Loup Alpha", 2, 30, 60));
+        deck.ajouterCarte(new Serviteur("Yéti Grincheux", 4, 100, 60));
+        deck.ajouterCarte(new Serviteur("Soldat d'élite", 3, 21, 50));
+        deck.ajouterCarte(new Serviteur("Golem de pierre", 5, 60, 80));
+        deck.ajouterCarte(new Serviteur("Mage Sinistre", 3, 30, 40));
         deck.melangerDeck();
     }
 
@@ -139,10 +168,16 @@ public class Main_JeuComplet {
         while (choix < 0 || choix > joueur.getMain().size()) {
             if (scanner.hasNextInt()) {
                 choix = scanner.nextInt();
+                scanner.nextLine();
+                if (choix < 0 || choix > joueur.getMain().size()) {
+                    System.out.println("❌ Numéro hors plage, veuillez réessayer.");
+                }
             } else {
-                scanner.next();
+                System.out.println("❌ Veuillez entrer un nombre entier valide.");
+                scanner.nextLine();
             }
         }
+//        tata
 
         if (choix == 0) {
             System.out.println(joueur.getPseudo() + " passe son tour.");

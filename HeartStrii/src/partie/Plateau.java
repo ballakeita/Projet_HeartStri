@@ -27,6 +27,7 @@ public class Plateau {
     public boolean estVide() {
         return serviteurs.isEmpty();
     }
+<<<<<<< HEAD
  // Méthode pour afficher tous les serviteurs actuellement posés sur le plateau du joueur
     public void afficherPlateau() {
         // On récupère la liste des serviteurs posés sur le plateau
@@ -41,6 +42,17 @@ public class Plateau {
             System.out.println((i + 1) + " - " + serviteurs.get(i).getNom() +
                                " | Attaque: " + serviteurs.get(i).getAttaque() +
                                " | Vie: " + serviteurs.get(i).getVie());
+=======
+    public void afficherPlateau() {
+        if (serviteurs.isEmpty()) {
+            System.out.println("🔹 Plateau vide");
+            return;
+        }
+
+        for (int i = 0; i < serviteurs.size(); i++) {
+            System.out.print((i + 1) + " ➜ ");
+            serviteurs.get(i).afficherInfos();
+>>>>>>> e9b66ac9b1edcd71cf11ae573138f431653a65ae
         }
     }
 

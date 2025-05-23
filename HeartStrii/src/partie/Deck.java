@@ -5,34 +5,34 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import carte.Serviteur;
+import carte.Carte; // importation de la classe mère
 
 // Le deck contient les cartes du joueur
 public class Deck {
-    private List<Serviteur> cartes;
+    private List<Carte> cartes; // On stocke des Cartes (Serviteur, Arme, Sort...)
 
     // Constructeur : on initialise la liste vide
     public Deck() {
         cartes = new ArrayList<>();
     }
 
-    // Ajouter un serviteur dans le deck
-    public void ajouterCarte(Serviteur s) {
-        cartes.add(s);
+    // Ajouter une carte dans le deck
+    public void ajouterCarte(Carte c) {
+        cartes.add(c);
     }
 
     // Tire une carte au hasard parmi celles du deck
-    public Serviteur tirerCarteAleatoire() {
+    public Carte tirerCarteAleatoire() {
         if (cartes.isEmpty()) return null; // deck vide
         Random rand = new Random();
-        int index = rand.nextInt(cartes.size()); // index entre 0 et size - 1
-        return cartes.get(index);
+        int index = rand.nextInt(cartes.size()); 
+        return cartes.remove(index); // retire et retourne la carte
     }
 
     // Affiche toutes les cartes présentes dans le deck
     public void afficherDeck() {
-        for (Serviteur s : cartes) {
-            s.afficherInfos();
+        for (Carte c : cartes) {
+            c.afficherInfos();
         }
     }
     
