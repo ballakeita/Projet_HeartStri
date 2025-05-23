@@ -64,10 +64,12 @@ public class Joueur {
     }
 
     public void afficherMain() {
-        for (Carte c : main) {
-            c.afficherInfos();
+        for (int i = 0; i < main.size(); i++) {
+            System.out.print(i + " ➜ ");
+            main.get(i).afficherInfos();
         }
     }
+//toto
     public void jouerSort(Sort sort, Object cible) {
         if (main.contains(sort) && hero.getManaCourant() >= sort.getMana()) {
             sort.appliquerEffet(cible);

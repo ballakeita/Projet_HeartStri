@@ -27,4 +27,16 @@ public class Plateau {
     public boolean estVide() {
         return serviteurs.isEmpty();
     }
+    public void afficherPlateau() {
+        if (serviteurs.isEmpty()) {
+            System.out.println("🔹 Plateau vide");
+            return;
+        }
+
+        for (int i = 0; i < serviteurs.size(); i++) {
+            System.out.print((i + 1) + " ➜ ");
+            serviteurs.get(i).afficherInfos();
+        }
+    }
+
 }

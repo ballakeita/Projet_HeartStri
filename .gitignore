@@ -1,0 +1,17 @@
+# Dossiers de compilation
+/bin/
+out/
+*.class
+
+# Fichiers Eclipse
+.classpath
+.project
+.settings/
+
+# Fichiers temporaires
+*.log
+*.tmp
+
+# Fichiers système
+.DS_Store
+Thumbs.db
