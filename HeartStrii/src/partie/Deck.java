@@ -1,6 +1,7 @@
 package partie;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -33,5 +34,10 @@ public class Deck {
         for (Serviteur s : cartes) {
             s.afficherInfos();
         }
+    }
+    
+    // Mélange les cartes du deck
+    public void melangerDeck() {
+        Collections.shuffle(cartes);
     }
 }
