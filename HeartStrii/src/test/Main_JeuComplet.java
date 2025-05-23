@@ -151,11 +151,11 @@ public class Main_JeuComplet {
 
     public static void initialiserDeck(Joueur joueur) {
         Deck deck = joueur.getDeck();
-        deck.ajouterCarte(new Serviteur("Loup Alpha", 2, 3, 60));
-        deck.ajouterCarte(new Serviteur("Yéti Grincheux", 4, 4, 60));
-        deck.ajouterCarte(new Serviteur("Soldat d'élite", 3, 3, 50));
-        deck.ajouterCarte(new Serviteur("Golem de pierre", 5, 5, 80));
-        deck.ajouterCarte(new Serviteur("Mage Sinistre", 3, 5, 40));
+        deck.ajouterCarte(new Serviteur("Loup Alpha", 2, 30, 60));
+        deck.ajouterCarte(new Serviteur("Yéti Grincheux", 4, 100, 60));
+        deck.ajouterCarte(new Serviteur("Soldat d'élite", 3, 21, 50));
+        deck.ajouterCarte(new Serviteur("Golem de pierre", 5, 60, 80));
+        deck.ajouterCarte(new Serviteur("Mage Sinistre", 3, 30, 40));
         deck.melangerDeck();
     }
 

@@ -6,8 +6,8 @@ import carte.Serviteur;
 public class Hero {
     private String nom;
     private int pv = 30;
-    private int manaMax = 1;
-    private int manaCourant = 1;
+    private int manaMax = 0;
+    private int manaCourant = 0;
     private Arme armeEquipee;
     private TypeHero type;
 
