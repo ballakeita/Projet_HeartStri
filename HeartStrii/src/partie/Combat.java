@@ -2,10 +2,20 @@ package partie;
 
 import carte.Serviteur;
 
-// Cette classe permet de simuler un combat entre deux serviteurs
+/**
+ * Classe utilitaire pour gérer les combats entre serviteurs.
+ * On utilise cette classe pour simuler les affrontements sur le plateau.
+ * @author Abdel Amir AMIRI, Balla KEITA, Ny Avo RAKOTOARIMAHEFASOA
+ */
 public class Combat {
 
-    // Lance un combat entre deux serviteurs
+    /**
+     * Lance un combat entre deux serviteurs.
+     * L'attaquant inflige ses dégâts au défenseur, puis le défenseur riposte s'il est encore en vie.
+     * On affiche le déroulement du combat et le résultat (mort éventuelle des serviteurs).
+     * @param attaquant Le serviteur qui attaque
+     * @param defenseur Le serviteur qui se défend
+     */
     public static void lancerCombat(Serviteur attaquant, Serviteur defenseur) {
         System.out.println("Début du combat entre " + attaquant.getNom() + " et " + defenseur.getNom());
 

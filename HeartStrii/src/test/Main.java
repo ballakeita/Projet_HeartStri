@@ -16,8 +16,18 @@ import partie.Hero;
 import partie.TypeHero;
 import Outils.ChargementCartes;
 
+/**
+ * Classe principale qui gère le déroulement complet d'une partie.
+ * On retrouve ici la boucle principale, la gestion des tours, la création des joueurs, des decks, et toutes les interactions utilisateur.
+ * Toutes les mécaniques du jeu passent par cette classe.
+ * @author Abdel Amir AMIRI, Balla KEITA, Ny Avo RAKOTOARIMAHEFASOA
+ */
 public class Main {
 
+    /**
+     * Point d'entrée du programme. On crée les joueurs, les decks, on distribue les cartes et on lance la boucle de jeu.
+     * @param args non utilisé ici
+     */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
@@ -67,7 +77,12 @@ public class Main {
         scanner.close();
     }
 
-    // Un tour de jeu pour un joueur
+    /**
+     * Gère un tour complet pour un joueur : pioche, jeu de carte, attaque, pouvoir spécial, arme.
+     * @param scanner pour lire les entrées utilisateur
+     * @param joueur le joueur qui joue son tour
+     * @param adversaire l'adversaire du joueur
+     */
     public static void jouerUnTour(Scanner scanner, Joueur joueur, Joueur adversaire) {
         System.out.println("\n# TOUR DE " + joueur.getPseudo());
         joueur.getHero().augmenterMana();
@@ -179,7 +194,11 @@ public class Main {
         }
     }
 
-    // Choix du héros au début
+    /**
+     * Permet au joueur de choisir son héros au début de la partie.
+     * @param scanner pour lire l'entrée utilisateur
+     * @return le type de héros choisi
+     */
     public static TypeHero choisirHero(Scanner scanner) {
         System.out.println("Choisis un héros parmi ceux-là :");
         TypeHero[] types = TypeHero.values();
@@ -204,7 +223,10 @@ public class Main {
         return types[choix - 1];
     }
 
-    // On pioche les cartes depuis les fichiers CSV pour faire un deck
+    /**
+     * Initialise un deck pour un joueur à partir des fichiers CSV.
+     * @param joueur le joueur pour qui on crée le deck
+     */
     public static void initialiserDeck(Joueur joueur) {
         List<Carte> toutesLesCartes = new ArrayList<>();
         toutesLesCartes.addAll(ChargementCartes.chargerCartesDepuisCSV("serviteurs.csv", "serviteur"));
@@ -220,7 +242,11 @@ public class Main {
         deck.melangerDeck();
     }
 
-    // On fait les deux decks sans doublon
+    /**
+     * Initialise les decks des deux joueurs sans doublon.
+     * @param joueur1 premier joueur
+     * @param joueur2 deuxième joueur
+     */
     public static void initialiserDecks(Joueur joueur1, Joueur joueur2) {
         List<Carte> toutesLesCartes = new ArrayList<>();
         toutesLesCartes.addAll(ChargementCartes.chargerCartesDepuisCSV("serviteurs.csv", "serviteur"));
@@ -242,7 +268,12 @@ public class Main {
         deck2.melangerDeck();
     }
 
-    // Ici le joueur joue une carte de sa main
+    /**
+     * Permet au joueur de jouer une carte depuis sa main.
+     * @param scanner pour lire l'entrée utilisateur
+     * @param joueur le joueur qui joue
+     * @param adversaire l'adversaire du joueur
+     */
     public static void jouerCarteDepuisMain(Scanner scanner, Joueur joueur, Joueur adversaire) {
         boolean carteJoueeOuPasse = false;
         while (!carteJoueeOuPasse) {

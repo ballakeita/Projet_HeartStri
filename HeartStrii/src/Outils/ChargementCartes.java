@@ -4,10 +4,19 @@ import carte.*;
 import java.io.*;
 import java.util.*;
 
-// Classe utilitaire pour charger des cartes depuis un fichier CSV
+/**
+ * Classe utilitaire pour charger des cartes depuis un fichier CSV.
+ * On utilise cette classe pour générer les decks à partir des fichiers de ressources.
+ * @author Abdel Amir AMIRI, Balla KEITA, Ny Avo RAKOTOARIMAHEFASOA
+ */
 public class ChargementCartes {
 
-    // Méthode qui lit un fichier CSV et crée une liste de cartes selon le type demandé
+    /**
+     * Méthode qui lit un fichier CSV et crée une liste de cartes selon le type demandé.
+     * @param cheminFichier Le nom du fichier CSV à lire (doit être dans les ressources du projet)
+     * @param typeCarte Le type de carte à charger ("serviteur", "sort" ou "arme")
+     * @return Une liste de cartes du type demandé, lue et construite à partir du fichier
+     */
     public static List<Carte> chargerCartesDepuisCSV(String cheminFichier, String typeCarte) {
         List<Carte> cartes = new ArrayList<>();
 

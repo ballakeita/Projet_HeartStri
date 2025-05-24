@@ -4,6 +4,12 @@ import carte.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Classe qui gère un joueur dans la partie.
+ * On retrouve ici le pseudo, le héros, le deck, la main et le plateau du joueur.
+ * Toutes les actions du joueur (piocher, invoquer, jouer un sort...) sont centralisées ici.
+ * @author Abdel Amir AMIRI, Balla KEITA, Ny Avo RAKOTOARIMAHEFASOA
+ */
 public class Joueur {
     private String pseudo;
     private Hero hero;
@@ -11,6 +17,11 @@ public class Joueur {
     private List<Carte> main;
     private Plateau plateau;
 
+    /**
+     * Constructeur du joueur.
+     * @param pseudo Le nom du joueur
+     * @param hero Le héros choisi par le joueur
+     */
     public Joueur(String pseudo, Hero hero) {
         this.pseudo = pseudo;
         this.hero = hero;
@@ -19,30 +30,58 @@ public class Joueur {
         this.plateau = new Plateau();
     }
 
+    /**
+     * Retourne le pseudo du joueur.
+     * @return pseudo
+     */
     public String getPseudo() {
         return pseudo;
     }
 
+    /**
+     * Retourne le héros du joueur.
+     * @return le héros
+     */
     public Hero getHero() {
         return hero;
     }
 
+    /**
+     * Retourne le deck du joueur.
+     * @return le deck
+     */
     public Deck getDeck() {
         return deck;
     }
 
+    /**
+     * Retourne la main du joueur (cartes en main).
+     * @return la liste des cartes en main
+     */
     public List<Carte> getMain() {
         return main;
     }
 
+    /**
+     * Retourne le plateau du joueur (serviteurs en jeu).
+     * @return le plateau
+     */
     public Plateau getPlateau() {
         return plateau;
     }
 
+    /**
+     * Ajoute un serviteur au deck du joueur.
+     * @param s le serviteur à ajouter
+     */
     public void ajouterCarteDeck(Serviteur s) {
         deck.ajouterCarte(s);
     }
 
+    /**
+     * Pioche une carte du deck et l'ajoute à la main.
+     * Affiche un message si le deck est vide.
+     */
     public void piocherCarte() {
         Carte c = deck.tirerCarteAleatoire();
         if (c != null) {
@@ -53,6 +92,10 @@ public class Joueur {
         }
     }
 
+    /**
+     * Invoque un serviteur depuis la main sur le plateau si le joueur a assez de mana.
+     * @param s le serviteur à invoquer
+     */
     public void invoquerCarte(Serviteur s) {
         if (main.contains(s) && hero.getManaCourant() >= s.getMana()) {
             plateau.ajouterServiteur(s);
@@ -62,11 +105,17 @@ public class Joueur {
         }
     }
 
+    /**
+     * Utilise du mana (retire le coût indiqué au héros).
+     * @param cout le coût en mana à retirer
+     */
     public void utiliserMana(int cout) {
         hero.reduireMana(cout);
     }
 
-    // Affiche la main du joueur
+    /**
+     * Affiche la main du joueur (toutes les cartes en main).
+     */
     public void afficherMain() {
         if (main.isEmpty()) {
             System.out.println("Votre main est vide.");
@@ -78,7 +127,12 @@ public class Joueur {
         }
     }
 
-    // Joue un sort sur une cible
+    /**
+     * Joue un sort sur une cible (serviteur ou héros).
+     * Retire le sort de la main et le coût en mana au héros.
+     * @param sort le sort à jouer
+     * @param cible la cible du sort (Serviteur ou Hero)
+     */
     public void jouerSort(Sort sort, Object cible) {
         if (main.contains(sort) && hero.getManaCourant() >= sort.getMana()) {
             sort.appliquerEffet(cible);
@@ -86,5 +140,4 @@ public class Joueur {
             main.remove(sort);
         }
     }
-
 }
