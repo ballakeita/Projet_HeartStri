@@ -1,12 +1,18 @@
 package test;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
+
+import carte.Carte;
 import carte.Serviteur;
 import partie.Combat;
 import partie.Deck;
 import partie.Joueur;
 import partie.Hero;
 import partie.TypeHero;
+import Outils.ChargementCartes;
 
 public class Main {
 
@@ -154,48 +160,56 @@ public class Main {
     }
 
     public static void initialiserDeck(Joueur joueur) {
+        List<Carte> toutesLesCartes = new ArrayList<>();
+        toutesLesCartes.addAll(ChargementCartes.chargerCartesDepuisCSV("src/donnees_cartes/serviteurs.csv", "serviteur"));
+        toutesLesCartes.addAll(ChargementCartes.chargerCartesDepuisCSV("src/donnees_cartes/sorts.csv", "sort"));
+        toutesLesCartes.addAll(ChargementCartes.chargerCartesDepuisCSV("src/donnees_cartes/armes.csv", "arme"));
+
+        Collections.shuffle(toutesLesCartes);
+
         Deck deck = joueur.getDeck();
-        deck.ajouterCarte(new Serviteur("Loup Alpha", 2, 30, 60));
-        deck.ajouterCarte(new Serviteur("Yéti Grincheux", 4, 100, 60));
-        deck.ajouterCarte(new Serviteur("Soldat d'élite", 3, 21, 50));
-        deck.ajouterCarte(new Serviteur("Golem de pierre", 5, 60, 80));
-        deck.ajouterCarte(new Serviteur("Mage Sinistre", 3, 30, 40));
+        for (int i = 0; i < 30 && i < toutesLesCartes.size(); i++) {
+            deck.ajouterCarte(toutesLesCartes.get(i));
+        }
         deck.melangerDeck();
     }
 
     public static void jouerCarteDepuisMain(Scanner scanner, Joueur joueur) {
-        System.out.println("\n🎮 " + joueur.getPseudo() + ", choisissez une carte à jouer (Mana : " + joueur.getHero().getManaCourant() + ")");
-        joueur.afficherMain();
-        System.out.print("Entrez le numéro de la carte à jouer (1-" + joueur.getMain().size() + ") ou 0 pour passer : ");
+        boolean carteJoueeOuPasse = false;
+        while (!carteJoueeOuPasse) {
+            System.out.println("\n🎮 " + joueur.getPseudo() + ", choisissez une carte à jouer (Mana : " + joueur.getHero().getManaCourant() + ")");
+            joueur.afficherMain();
+            System.out.print("Entrez le numéro de la carte à jouer (1-" + joueur.getMain().size() + ") ou 0 pour passer : ");
 
-        int choix = -1;
-        while (choix < 0 || choix > joueur.getMain().size()) {
-            if (scanner.hasNextInt()) {
-                choix = scanner.nextInt();
-                scanner.nextLine();
-                if (choix < 0 || choix > joueur.getMain().size()) {
-                    System.out.println("❌ Numéro hors plage, veuillez réessayer.");
+            int choix = -1;
+            while (choix < 0 || choix > joueur.getMain().size()) {
+                if (scanner.hasNextInt()) {
+                    choix = scanner.nextInt();
+                    scanner.nextLine();
+                    if (choix < 0 || choix > joueur.getMain().size()) {
+                        System.out.println("❌ Numéro hors plage, veuillez réessayer.");
+                    }
+                } else {
+                    System.out.println("❌ Veuillez entrer un nombre entier valide.");
+                    scanner.nextLine();
                 }
-            } else {
-                System.out.println("❌ Veuillez entrer un nombre entier valide.");
-                scanner.nextLine();
             }
-        }
-//        tata
 
-        if (choix == 0) {
-            System.out.println(joueur.getPseudo() + " passe son tour.");
-            return;
-        }
-
-        Serviteur choisi = (Serviteur) joueur.getMain().get(choix - 1);
-        if (choisi.getMana() > joueur.getHero().getManaCourant()) {
-            System.out.println("❌ Pas assez de mana pour jouer " + choisi.getNom());
-        } else {
-            joueur.getHero().reduireMana(choisi.getMana());
-            joueur.getPlateau().ajouterServiteur(choisi);
-            joueur.getMain().remove(choisi);
-            System.out.println("✅ " + choisi.getNom() + " est posé sur le plateau !");
+            if (choix == 0) {
+                System.out.println(joueur.getPseudo() + " passe son tour.");
+                carteJoueeOuPasse = true;
+            } else if (choix >= 1 && choix <= joueur.getMain().size()) {
+                Serviteur choisi = (Serviteur) joueur.getMain().get(choix - 1);
+                if (choisi.getMana() > joueur.getHero().getManaCourant()) {
+                    System.out.println("❌ Pas assez de mana pour jouer " + choisi.getNom() + ". Choisissez une autre carte ou passez.");
+                } else {
+                    joueur.getHero().reduireMana(choisi.getMana());
+                    joueur.getPlateau().ajouterServiteur(choisi);
+                    joueur.getMain().remove(choisi);
+                    System.out.println("✅ " + choisi.getNom() + " est posé sur le plateau !");
+                    carteJoueeOuPasse = true;
+                }
+            }
         }
     }
 }

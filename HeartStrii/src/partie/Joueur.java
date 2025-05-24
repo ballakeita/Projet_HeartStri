@@ -47,6 +47,9 @@ public class Joueur {
         Carte c = deck.tirerCarteAleatoire();
         if (c != null) {
             main.add(c);
+            System.out.println(pseudo + " pioche : " + c.getNom()); // Affiche le nom et les infos de la carte
+        } else {
+            System.out.println(pseudo + " ne peut pas piocher car le deck est vide.");
         }
     }
 
@@ -64,12 +67,16 @@ public class Joueur {
     }
 
     public void afficherMain() {
-        for (int i = 0; i < main.size(); i++) {
-            System.out.print(i + " ➜ ");
-            main.get(i).afficherInfos();
+        if (main.isEmpty()) {
+            System.out.println("Votre main est vide.");
+        } else {
+            for (int i = 0; i < main.size(); i++) {
+                System.out.print((i + 1) + " - ");
+                main.get(i).afficherInfos(); // Appelle afficherInfos() pour chaque carte
+            }
         }
     }
-//toto
+
     public void jouerSort(Sort sort, Object cible) {
         if (main.contains(sort) && hero.getManaCourant() >= sort.getMana()) {
             sort.appliquerEffet(cible);
