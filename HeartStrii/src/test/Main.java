@@ -35,26 +35,26 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         // --- Phase 1 : Création des joueurs ---
-        System.out.println("👤 Création du joueur 1");
+        System.out.println("* Création du joueur 1");
         System.out.print("Entrez le nom du joueur 1 : ");
         String nomJoueur1 = scanner.nextLine();
         TypeHero typeHero1 = choisirHero(scanner);
         Joueur joueur1 = new Joueur(nomJoueur1, new Hero(typeHero1.toString(), typeHero1));
 
-        System.out.println("\n👤 Création du joueur 2");
+        System.out.println("\n* Création du joueur 2");
         System.out.print("Entrez le nom du joueur 2 : ");
         String nomJoueur2 = scanner.nextLine();
         TypeHero typeHero2 = choisirHero(scanner);
         Joueur joueur2 = new Joueur(nomJoueur2, new Hero(typeHero2.toString(), typeHero2));
 
-        System.out.println("\n✅ Les deux joueurs ont été créés !");
+        System.out.println("\n+ Les deux joueurs ont été créés !");
         System.out.println(joueur1.getPseudo() + " joue le héros " + joueur1.getHero().getNom());
         System.out.println(joueur2.getPseudo() + " joue le héros " + joueur2.getHero().getNom());
 
         // --- Phase 2 : Création des decks + pioche ---
         initialiserDecks(joueur1, joueur2);
 
-        System.out.println("\n🃏 Distribution des cartes de départ...");
+        System.out.println("\n+ Distribution des cartes de départ...");
         System.out.println(joueur1.getPseudo() + " pioche 3 cartes.");
         for (int i = 0; i < 3; i++) {
             joueur1.piocherCarte();
@@ -65,6 +65,7 @@ public class Main {
         }
 
         // --- Boucle principale du jeu ---
+        // On alterne les tours tant qu'aucun héros n'est mort
         while (!joueur1.getHero().estMort() && !joueur2.getHero().estMort()) {
             // === Tour du joueur 1 ===
             jouerUnTour(scanner, joueur1, joueur2);
@@ -75,22 +76,22 @@ public class Main {
         }
 
         // --- Fin de partie ---
-        System.out.println("\n🎉 Fin du combat !");
+        System.out.println("\n+ Fin du combat !");
         if (joueur1.getHero().estMort()) {
-            System.out.println("🏆 " + joueur2.getPseudo() + " a gagné !");
+            System.out.println("! " + joueur2.getPseudo() + " a gagné !");
         } else if (joueur2.getHero().estMort()) {
-            System.out.println("🏆 " + joueur1.getPseudo() + " a gagné !");
+            System.out.println("! " + joueur1.getPseudo() + " a gagné !");
         } else {
-            System.out.println("🤝 Match nul !");
+            System.out.println("= Match nul !");
         }
 
         scanner.close();
     }
 
     public static void jouerUnTour(Scanner scanner, Joueur joueur, Joueur adversaire) {
-        System.out.println("\n🔁 TOUR DE " + joueur.getPseudo());
-        System.out.println("❤️ PV de " + joueur.getPseudo() + " (" + joueur.getHero().getNom() + ") : " + joueur.getHero().getPv());
-        System.out.println("📦 Cartes restantes dans le deck : " + joueur.getDeck().getCartes().size());
+        System.out.println("\n# TOUR DE " + joueur.getPseudo());
+        System.out.println("♥ PV de " + joueur.getPseudo() + " (" + joueur.getHero().getNom() + ") : " + joueur.getHero().getPv());
+        System.out.println("- Cartes restantes dans le deck : " + joueur.getDeck().getCartes().size());
         joueur.getHero().augmenterMana();
         joueur.piocherCarte();
 
@@ -103,9 +104,9 @@ public class Main {
         adversaire.getPlateau().afficherPlateau();
 
         if (joueur.getPlateau().getServiteurs().isEmpty()) {
-            System.out.println("🛡️ Aucun serviteur à attaquer.");
+            System.out.println("- Aucun serviteur à attaquer.");
         } else {
-            System.out.println("\n⚔️ " + joueur.getPseudo() + ", choisissez un serviteur pour attaquer ou 0 pour passer :");
+            System.out.println("\n> " + joueur.getPseudo() + ", choisissez un serviteur pour attaquer ou 0 pour passer :");
             joueur.getPlateau().afficherPlateau();
 
             int atk = -2;
@@ -116,13 +117,13 @@ public class Main {
                     scanner.nextLine();
                     if (atk == -1) {
                         System.out.println(joueur.getPseudo() + " passe la phase d'attaque.");
-                        return; // Fin du tour sans attaque
+                        return;
                     }
                     if (atk < 0 || atk >= joueur.getPlateau().getServiteurs().size()) {
-                        System.out.println("❌ Numéro hors plage, veuillez réessayer.");
+                        System.out.println("x Numéro hors plage, veuillez réessayer.");
                     }
                 } else {
-                    System.out.println("❌ Veuillez entrer un nombre entier valide.");
+                    System.out.println("x Veuillez entrer un nombre entier valide.");
                     scanner.nextLine(); // consommer entrée incorrecte
                 }
             }
@@ -131,8 +132,8 @@ public class Main {
 
             if (adversaire.getPlateau().getServiteurs().isEmpty()) {
                 adversaire.getHero().recevoirDegats(attaquant.getAttaque());
-                System.out.println("💥 " + attaquant.getNom() + " attaque le héros " + adversaire.getHero().getNom() + " pour " + attaquant.getAttaque() + " dégâts.");
-                System.out.println("❤️ PV du héros " + adversaire.getHero().getNom() + " : " + adversaire.getHero().getPv());
+                System.out.println("> " + attaquant.getNom() + " attaque le héros " + adversaire.getHero().getNom() + " pour " + attaquant.getAttaque() + " dégâts.");
+                System.out.println("♥ PV du héros " + adversaire.getHero().getNom() + " : " + adversaire.getHero().getPv());
             } else {
                 System.out.println("Cible sur le plateau de " + adversaire.getPseudo() + " :");
                 adversaire.getPlateau().afficherPlateau();
@@ -144,10 +145,10 @@ public class Main {
                         cible = scanner.nextInt() - 1;
                         scanner.nextLine();
                         if (cible < 0 || cible >= adversaire.getPlateau().getServiteurs().size()) {
-                            System.out.println("❌ Numéro hors plage, veuillez réessayer.");
+                            System.out.println("x Numéro hors plage, veuillez réessayer.");
                         }
                     } else {
-                        System.out.println("❌ Veuillez entrer un nombre entier valide.");
+                        System.out.println("x Veuillez entrer un nombre entier valide.");
                         scanner.nextLine();
                     }
                 }
@@ -166,9 +167,8 @@ public class Main {
             System.out.println("Voulez-vous attaquer avec votre arme ? (o/n)");
             String reponse = scanner.nextLine();
             if (reponse.equalsIgnoreCase("o")) {
-                // Ici, tu peux demander la cible (héros adverse ou serviteur adverse)
                 joueur.getHero().attaquerAvecArme(adversaire.getHero());
-                System.out.println("🗡️ " + joueur.getHero().getNom() + " attaque avec son arme !");
+                System.out.println("> " + joueur.getHero().getNom() + " attaque avec son arme !");
             }
         }
     }
@@ -187,10 +187,10 @@ public class Main {
                 choix = scanner.nextInt();
                 scanner.nextLine();
                 if (choix < 1 || choix > types.length) {
-                    System.out.println("❌ Numéro hors plage, veuillez réessayer.");
+                    System.out.println("x Numéro hors plage, veuillez réessayer.");
                 }
             } else {
-                System.out.println("❌ Veuillez entrer un nombre entier valide.");
+                System.out.println("x Veuillez entrer un nombre entier valide.");
                 scanner.nextLine();
             }
         }
@@ -239,7 +239,7 @@ public class Main {
     public static void jouerCarteDepuisMain(Scanner scanner, Joueur joueur, Joueur adversaire) {
         boolean carteJoueeOuPasse = false;
         while (!carteJoueeOuPasse) {
-            System.out.println("\n🎮 " + joueur.getPseudo() + ", choisissez une carte à jouer (Mana : " + joueur.getHero().getManaCourant() + ")");
+            System.out.println("\n* " + joueur.getPseudo() + ", choisissez une carte à jouer (Mana : " + joueur.getHero().getManaCourant() + ")");
             joueur.afficherMain();
             System.out.print("Entrez le numéro de la carte à jouer (1-" + joueur.getMain().size() + ") ou 0 pour passer : ");
 
@@ -249,10 +249,10 @@ public class Main {
                     choix = scanner.nextInt();
                     scanner.nextLine();
                     if (choix < 0 || choix > joueur.getMain().size()) {
-                        System.out.println("❌ Numéro hors plage, veuillez réessayer.");
+                        System.out.println("x Numéro hors plage, veuillez réessayer.");
                     }
                 } else {
-                    System.out.println("❌ Veuillez entrer un nombre entier valide.");
+                    System.out.println("x Veuillez entrer un nombre entier valide.");
                     scanner.nextLine();
                 }
             }
@@ -263,7 +263,7 @@ public class Main {
             } else if (choix >= 1 && choix <= joueur.getMain().size()) {
                 Carte carteChoisie = joueur.getMain().get(choix - 1);
                 if (carteChoisie.getMana() > joueur.getHero().getManaCourant()) {
-                    System.out.println("❌ Pas assez de mana pour jouer " + carteChoisie.getNom() + ". Choisissez une autre carte ou passez.");
+                    System.out.println("x Pas assez de mana pour jouer " + carteChoisie.getNom() + ". Choisissez une autre carte ou passez.");
                 } else {
                     System.out.println("Mana avant : " + joueur.getHero().getManaCourant());
                     joueur.getHero().reduireMana(carteChoisie.getMana()); // Décrémente la mana pour tous les types
@@ -271,10 +271,10 @@ public class Main {
 
                     if (carteChoisie instanceof Serviteur) {
                         joueur.getPlateau().ajouterServiteur((Serviteur) carteChoisie);
-                        System.out.println("✅ " + carteChoisie.getNom() + " est posé sur le plateau !");
+                        System.out.println("+ " + carteChoisie.getNom() + " est posé sur le plateau !");
                     } else if (carteChoisie instanceof Arme) {
                         joueur.getHero().setArmeEquipee((Arme) carteChoisie);
-                        System.out.println("🗡️ " + joueur.getHero().getNom() + " s'équipe de " + carteChoisie.getNom());
+                        System.out.println("> " + joueur.getHero().getNom() + " s'équipe de " + carteChoisie.getNom());
                     } else if (carteChoisie instanceof Sort) {
                         Sort sort = (Sort) carteChoisie;
                         Object cible = null;
@@ -293,7 +293,7 @@ public class Main {
                             } else if (choixCible > 0 && choixCible <= joueur.getPlateau().getServiteurs().size()) {
                                 cible = joueur.getPlateau().getServiteurs().get(choixCible - 1);
                             } else {
-                                System.out.println("❌ Cible invalide, le sort est perdu !");
+                                System.out.println("x Cible invalide, le sort est perdu !");
                             }
                         } else if (sort.getEffet() == Sort.TypeEffet.DEGATS) {
                             // Cible : serviteur adverse ou héros adverse si pas de serviteur
@@ -310,7 +310,7 @@ public class Main {
                                 if (choixCible > 0 && choixCible <= adversaire.getPlateau().getServiteurs().size()) {
                                     cible = adversaire.getPlateau().getServiteurs().get(choixCible - 1);
                                 } else {
-                                    System.out.println("❌ Cible invalide, le sort est perdu !");
+                                    System.out.println("x Cible invalide, le sort est perdu !");
                                 }
                             }
                         }

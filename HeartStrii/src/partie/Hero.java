@@ -3,6 +3,7 @@ package partie;
 import carte.Arme;
 import carte.Serviteur;
 
+// Classe qui gère le héros du joueur
 public class Hero {
     private String nom;
     private int pv = 30;
@@ -11,15 +12,14 @@ public class Hero {
     private Arme armeEquipee;
     private TypeHero type;
 
-
     public Hero(String nom, TypeHero type) {
         this.nom = nom;
         this.type = type;
     }
+
     public TypeHero getType() {
         return type;
     }
-
 
     public String getNom() {
         return nom;
@@ -37,36 +37,44 @@ public class Hero {
         return manaMax;
     }
 
+    // Soigne le héros
     public void soigner(int valeur) {
         pv += valeur;
         if (pv > 30) pv = 30;
     }
 
+    // Le héros reçoit des dégâts
     public void recevoirDegats(int valeur) {
         pv -= valeur;
     }
 
+    // Vérifie si le héros est mort
     public boolean estMort() {
         return pv <= 0;
     }
 
+    // Augmente la mana max et la mana courante (jusqu'à 10)
     public void augmenterMana() {
         if (manaMax < 10) manaMax++;
         if (manaCourant < manaMax) manaCourant++;
     }
 
+    // Retire du mana quand on joue une carte ou un pouvoir
     public void reduireMana(int cout) {
         manaCourant -= cout;
     }
 
+    // Équipe une arme au héros
     public void setArmeEquipee(carte.Arme carteChoisie) {
         this.armeEquipee = carteChoisie;
     }
 
+    // Retourne l'arme équipée
     public Arme getArmeEquipee() {
         return armeEquipee;
     }
 
+    // Permet au héros d'attaquer avec son arme
     public void attaquerAvecArme(Hero cible) {
         if (armeEquipee != null) {
             cible.recevoirDegats(armeEquipee.getAttaque());
@@ -76,8 +84,8 @@ public class Hero {
             }
         }
     }
-    
-//    Pour utiliser le pouvoir par les joueurs cibles
+
+    // Utilise le pouvoir du héros selon sa classe
     public void utiliserPouvoir(Joueur cible) {
         if (manaCourant < 2) {
             System.out.println(nom + " n’a pas assez de mana pour utiliser son pouvoir.");
@@ -98,19 +106,17 @@ public class Hero {
                 System.out.println(nom + " (Chasseur) inflige 2 dégâts au héros adverse.");
                 break;
             case GUERRIER:
-                this.pv += 2; // simulation d’armure
+                this.pv += 2;
                 System.out.println(nom + " (Guerrier) gagne 2 points d’armure (PV).");
                 break;
             case DRUIDE:
-                this.pv += 1; // 1 armure
+                this.pv += 1;
                 System.out.println(nom + " (Druide) gagne 1 armure.");
-                // effet bonus : donner 1 attaque temporaire (pas encore géré globalement)
+                // Bonus : donner 1 attaque temporaire (à gérer si besoin)
                 break;
             case PALADIN:
                 Serviteur recrue = new Serviteur("Recrue 1/1", 1, 1, 1);
-                // À adapter selon votre logique d’invocation
-                // Ici, on considère que le héros a un joueur associé pour invoquer
-                // => dans Joueur, créer une méthode invoquerDepuisPouvoir()
+                // À adapter selon la logique d’invocation dans Joueur
                 System.out.println(nom + " (Paladin) invoque une recrue 1/1.");
                 break;
             case VOLEUR:
@@ -122,6 +128,5 @@ public class Hero {
         manaCourant -= 2; // coût du pouvoir
         System.out.println("Mana : " + cible.getHero().getManaCourant() + "/" + cible.getHero().getManaMax());
     }
-
 }
 

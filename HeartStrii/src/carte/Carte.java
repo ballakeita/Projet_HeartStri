@@ -1,29 +1,29 @@
 package carte;
 
-//Classe abstraite représentant une carte générique du jeu
+// Classe abstraite pour une carte du jeu
 public abstract class Carte {
-//Nom de la carte
-	protected String nom;
+    // Nom de la carte
+    protected String nom;
 
-//Mana possédé par la carte
-	protected int mana;
+    // Coût en mana de la carte
+    protected int mana;
 
-//Constructeur pour initialiser les attributs
-	public Carte(String nom, int mana) {
-		this.nom = nom;
-		this.mana = mana;
-}
+    // Constructeur pour initialiser le nom et le mana
+    public Carte(String nom, int mana) {
+        this.nom = nom;
+        this.mana = mana;
+    }
 
-//Méthode pour récupérer le nom
-	public String getNom() {
-		return nom;
-}
+    // Retourne le nom de la carte
+    public String getNom() {
+        return nom;
+    }
 
-//Méthode pour récupérer le coût en mana
-	public int getMana() {
-		return mana;
-}
+    // Retourne le coût en mana de la carte
+    public int getMana() {
+        return mana;
+    }
 
-//Méthode abstraite : chaque type de carte affichera ses infos différemment
-	public abstract void afficherInfos();
+    // Chaque type de carte doit afficher ses infos à sa façon
+    public abstract void afficherInfos();
 }

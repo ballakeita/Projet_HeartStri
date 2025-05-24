@@ -66,17 +66,19 @@ public class Joueur {
         hero.reduireMana(cout);
     }
 
+    // Affiche la main du joueur
     public void afficherMain() {
         if (main.isEmpty()) {
             System.out.println("Votre main est vide.");
         } else {
             for (int i = 0; i < main.size(); i++) {
                 System.out.print((i + 1) + " - ");
-                main.get(i).afficherInfos(); // Appelle afficherInfos() pour chaque carte
+                main.get(i).afficherInfos(); // Affiche les infos de chaque carte dans la main
             }
         }
     }
 
+    // Joue un sort sur une cible
     public void jouerSort(Sort sort, Object cible) {
         if (main.contains(sort) && hero.getManaCourant() >= sort.getMana()) {
             sort.appliquerEffet(cible);
