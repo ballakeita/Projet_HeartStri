@@ -1,6 +1,19 @@
 package test;
 
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Scanner;
+
+import carte.Carte;
+import carte.Serviteur;
+import partie.Combat;
+import partie.Deck;
+import partie.Joueur;
+import partie.Hero;
+import partie.TypeHero;
+import Outils.ChargementCartes;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
@@ -75,6 +88,7 @@ public class Main {
 
     public static void jouerUnTour(Scanner scanner, Joueur joueur, Joueur adversaire) {
         System.out.println("\n🔁 TOUR DE " + joueur.getPseudo());
+        System.out.println("❤️ PV de " + joueur.getPseudo() + " (" + joueur.getHero().getNom() + ") : " + joueur.getHero().getPv());
         joueur.getHero().augmenterMana();
         joueur.piocherCarte();
 
@@ -161,9 +175,9 @@ public class Main {
 
     public static void initialiserDeck(Joueur joueur) {
         List<Carte> toutesLesCartes = new ArrayList<>();
-        toutesLesCartes.addAll(ChargementCartes.chargerCartesDepuisCSV("src/donnees_cartes/serviteurs.csv", "serviteur"));
-        toutesLesCartes.addAll(ChargementCartes.chargerCartesDepuisCSV("src/donnees_cartes/sorts.csv", "sort"));
-        toutesLesCartes.addAll(ChargementCartes.chargerCartesDepuisCSV("src/donnees_cartes/armes.csv", "arme"));
+        toutesLesCartes.addAll(ChargementCartes.chargerCartesDepuisCSV("serviteurs.csv", "serviteur"));
+        toutesLesCartes.addAll(ChargementCartes.chargerCartesDepuisCSV("sorts.csv", "sort"));
+        toutesLesCartes.addAll(ChargementCartes.chargerCartesDepuisCSV("armes.csv", "arme"));
 
         Collections.shuffle(toutesLesCartes);
 
