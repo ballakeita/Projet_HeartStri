@@ -91,7 +91,6 @@ public class Hero {
             System.out.println(nom + " n’a pas assez de mana pour utiliser son pouvoir.");
             return;
         }
-
         switch (type) {
             case MAGE:
                 cible.getHero().recevoirDegats(1);
@@ -124,9 +123,7 @@ public class Hero {
                 System.out.println(nom + " (Voleur) s’équipe d’une dague 1/2.");
                 break;
         }
-
-        manaCourant -= 2; // coût du pouvoir
-        System.out.println("Mana : " + cible.getHero().getManaCourant() + "/" + cible.getHero().getManaMax());
+        manaCourant -= 3; // coût du pouvoir
     }
 }
 

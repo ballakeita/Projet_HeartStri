@@ -1,6 +1,5 @@
 package test;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,25 +15,13 @@ import partie.Joueur;
 import partie.Hero;
 import partie.TypeHero;
 import Outils.ChargementCartes;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
-
-import carte.Carte;
-import carte.Serviteur;
-import partie.Combat;
-import partie.Deck;
-import partie.Joueur;
-import partie.Hero;
-import partie.TypeHero;
-import Outils.ChargementCartes;
 
 public class Main {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // --- Phase 1 : Création des joueurs ---
+        // Création des joueurs
         System.out.println("* Création du joueur 1");
         System.out.print("Entrez le nom du joueur 1 : ");
         String nomJoueur1 = scanner.nextLine();
@@ -51,31 +38,23 @@ public class Main {
         System.out.println(joueur1.getPseudo() + " joue le héros " + joueur1.getHero().getNom());
         System.out.println(joueur2.getPseudo() + " joue le héros " + joueur2.getHero().getNom());
 
-        // --- Phase 2 : Création des decks + pioche ---
+        // On prépare les decks et on distribue les cartes de départ
         initialiserDecks(joueur1, joueur2);
 
         System.out.println("\n+ Distribution des cartes de départ...");
         System.out.println(joueur1.getPseudo() + " pioche 3 cartes.");
-        for (int i = 0; i < 3; i++) {
-            joueur1.piocherCarte();
-        }
+        for (int i = 0; i < 3; i++) joueur1.piocherCarte();
         System.out.println(joueur2.getPseudo() + " pioche 4 cartes.");
-        for (int i = 0; i < 4; i++) {
-            joueur2.piocherCarte();
-        }
+        for (int i = 0; i < 4; i++) joueur2.piocherCarte();
 
-        // --- Boucle principale du jeu ---
-        // On alterne les tours tant qu'aucun héros n'est mort
+        // Boucle principale du jeu
         while (!joueur1.getHero().estMort() && !joueur2.getHero().estMort()) {
-            // === Tour du joueur 1 ===
             jouerUnTour(scanner, joueur1, joueur2);
             if (joueur2.getHero().estMort()) break;
-
-            // === Tour du joueur 2 ===
             jouerUnTour(scanner, joueur2, joueur1);
         }
 
-        // --- Fin de partie ---
+        // Affichage du gagnant
         System.out.println("\n+ Fin du combat !");
         if (joueur1.getHero().estMort()) {
             System.out.println("! " + joueur2.getPseudo() + " a gagné !");
@@ -88,93 +67,94 @@ public class Main {
         scanner.close();
     }
 
+    // Un tour de jeu pour un joueur
     public static void jouerUnTour(Scanner scanner, Joueur joueur, Joueur adversaire) {
         System.out.println("\n# TOUR DE " + joueur.getPseudo());
-        System.out.println("♥ PV de " + joueur.getPseudo() + " (" + joueur.getHero().getNom() + ") : " + joueur.getHero().getPv());
-        System.out.println("- Cartes restantes dans le deck : " + joueur.getDeck().getCartes().size());
         joueur.getHero().augmenterMana();
         joueur.piocherCarte();
 
+        // Ici le joueur peut jouer une carte de sa main
         jouerCarteDepuisMain(scanner, joueur, adversaire);
 
-        // Affichage des plateaux
-        System.out.println("\nPlateau de " + joueur.getPseudo() + " :");
-        joueur.getPlateau().afficherPlateau();
-        System.out.println("\nPlateau de " + adversaire.getPseudo() + " :");
-        adversaire.getPlateau().afficherPlateau();
-
+        // Phase d'attaque avec les serviteurs
         if (joueur.getPlateau().getServiteurs().isEmpty()) {
             System.out.println("- Aucun serviteur à attaquer.");
         } else {
-            System.out.println("\n> " + joueur.getPseudo() + ", choisissez un serviteur pour attaquer ou 0 pour passer :");
+            System.out.println("\n> " + joueur.getPseudo() + ", choisis un serviteur pour attaquer ou tape 0 pour passer :");
             joueur.getPlateau().afficherPlateau();
 
-            int atk = -2;
-            while (atk < -1 || atk >= joueur.getPlateau().getServiteurs().size()) {
-                System.out.print("Numéro du serviteur (ou 0 pour passer) : ");
+            int atk = -1;
+            while (atk < 0 || atk >= joueur.getPlateau().getServiteurs().size()) {
+                System.out.print("Numéro du serviteur : ");
                 if (scanner.hasNextInt()) {
                     atk = scanner.nextInt() - 1;
                     scanner.nextLine();
-                    if (atk == -1) {
-                        System.out.println(joueur.getPseudo() + " passe la phase d'attaque.");
-                        return;
-                    }
-                    if (atk < 0 || atk >= joueur.getPlateau().getServiteurs().size()) {
-                        System.out.println("x Numéro hors plage, veuillez réessayer.");
+                    if (atk < -1 || atk >= joueur.getPlateau().getServiteurs().size()) {
+                        System.out.println("x Numéro hors plage, recommence.");
                     }
                 } else {
-                    System.out.println("x Veuillez entrer un nombre entier valide.");
-                    scanner.nextLine(); // consommer entrée incorrecte
+                    System.out.println("x Mets un nombre entier stp.");
+                    scanner.nextLine();
                 }
             }
 
-            Serviteur attaquant = joueur.getPlateau().getServiteurs().get(atk);
-
-            if (adversaire.getPlateau().getServiteurs().isEmpty()) {
-                adversaire.getHero().recevoirDegats(attaquant.getAttaque());
-                System.out.println("> " + attaquant.getNom() + " attaque le héros " + adversaire.getHero().getNom() + " pour " + attaquant.getAttaque() + " dégâts.");
-                System.out.println("♥ PV du héros " + adversaire.getHero().getNom() + " : " + adversaire.getHero().getPv());
+            if (atk == -1) {
+                System.out.println(joueur.getPseudo() + " passe la phase d'attaque.");
             } else {
-                System.out.println("Cible sur le plateau de " + adversaire.getPseudo() + " :");
-                adversaire.getPlateau().afficherPlateau();
+                Serviteur attaquant = joueur.getPlateau().getServiteurs().get(atk);
 
-                int cible = -1;
-                while (cible < 0 || cible >= adversaire.getPlateau().getServiteurs().size()) {
-                    System.out.print("Numéro de la cible : ");
-                    if (scanner.hasNextInt()) {
-                        cible = scanner.nextInt() - 1;
-                        scanner.nextLine();
-                        if (cible < 0 || cible >= adversaire.getPlateau().getServiteurs().size()) {
-                            System.out.println("x Numéro hors plage, veuillez réessayer.");
+                // Si l'adversaire n'a pas de serviteur, on tape direct le héros
+                if (adversaire.getPlateau().getServiteurs().isEmpty()) {
+                    adversaire.getHero().recevoirDegats(attaquant.getAttaque());
+                    System.out.println("> " + attaquant.getNom() + " attaque le héros " + adversaire.getHero().getNom() + " pour " + attaquant.getAttaque() + " dégâts.");
+                    System.out.println("♥ PV du héros " + adversaire.getHero().getNom() + " : " + adversaire.getHero().getPv());
+                } else {
+                    // Sinon, on choisit une cible sur le plateau adverse
+                    System.out.println("Cible sur le plateau de " + adversaire.getPseudo() + " :");
+                    adversaire.getPlateau().afficherPlateau();
+
+                    int cible = -1;
+                    while (cible < 0 || cible >= adversaire.getPlateau().getServiteurs().size()) {
+                        System.out.print("Numéro de la cible : ");
+                        if (scanner.hasNextInt()) {
+                            cible = scanner.nextInt() - 1;
+                            scanner.nextLine();
+                            if (cible < 0 || cible >= adversaire.getPlateau().getServiteurs().size()) {
+                                System.out.println("x Numéro hors plage, recommence.");
+                            }
+                        } else {
+                            System.out.println("x Mets un nombre entier stp.");
+                            scanner.nextLine();
                         }
-                    } else {
-                        System.out.println("x Veuillez entrer un nombre entier valide.");
-                        scanner.nextLine();
                     }
+
+                    Serviteur defenseur = adversaire.getPlateau().getServiteurs().get(cible);
+                    Combat.lancerCombat(attaquant, defenseur);
+
+                    // On enlève les serviteurs morts du plateau
+                    if (attaquant.estMort()) joueur.getPlateau().getServiteurs().remove(attaquant);
+                    if (defenseur.estMort()) adversaire.getPlateau().getServiteurs().remove(defenseur);
                 }
-
-                Serviteur defenseur = adversaire.getPlateau().getServiteurs().get(cible);
-                Combat.lancerCombat(attaquant, defenseur);
-
-                if (attaquant.estMort()) joueur.getPlateau().getServiteurs().remove(attaquant);
-                if (defenseur.estMort()) adversaire.getPlateau().getServiteurs().remove(defenseur);
             }
-            // Fin du tour après une attaque
-            return;
         }
 
-        if (joueur.getHero().getArmeEquipee() != null) {
-            System.out.println("Voulez-vous attaquer avec votre arme ? (o/n)");
-            String reponse = scanner.nextLine();
-            if (reponse.equalsIgnoreCase("o")) {
-                joueur.getHero().attaquerAvecArme(adversaire.getHero());
-                System.out.println("> " + joueur.getHero().getNom() + " attaque avec son arme !");
+        // Ici je propose d'utiliser le pouvoir spécial avec '&'
+        if (joueur.getHero().getManaCourant() >= 3) {
+            System.out.println("\nTape & pour utiliser ton pouvoir spécial, ou appuie sur Entrée pour passer.");
+            String choixPouvoir = scanner.nextLine();
+            if (choixPouvoir.trim().equals("&")) {
+                joueur.getHero().utiliserPouvoir(adversaire);
+            } else {
+                System.out.println(joueur.getPseudo() + " ne fait pas de pouvoir spécial.");
             }
+        } else {
+            System.out.println("\nPas assez de mana pour utiliser le pouvoir spécial.");
         }
     }
 
+    // Choix du héros au début
     public static TypeHero choisirHero(Scanner scanner) {
-        System.out.println("Choisissez un héros parmi les suivants :");
+        System.out.println("Choisis un héros parmi ceux-là :");
         TypeHero[] types = TypeHero.values();
         for (int i = 0; i < types.length; i++) {
             System.out.println((i + 1) + " - " + types[i]);
@@ -182,21 +162,22 @@ public class Main {
 
         int choix = -1;
         while (choix < 1 || choix > types.length) {
-            System.out.print("Entrez le numéro du héros : ");
+            System.out.print("Numéro du héros : ");
             if (scanner.hasNextInt()) {
                 choix = scanner.nextInt();
                 scanner.nextLine();
                 if (choix < 1 || choix > types.length) {
-                    System.out.println("x Numéro hors plage, veuillez réessayer.");
+                    System.out.println("x Numéro hors plage, recommence.");
                 }
             } else {
-                System.out.println("x Veuillez entrer un nombre entier valide.");
+                System.out.println("x Mets un nombre entier stp.");
                 scanner.nextLine();
             }
         }
         return types[choix - 1];
     }
 
+    // On pioche les cartes depuis les fichiers CSV pour faire un deck
     public static void initialiserDeck(Joueur joueur) {
         List<Carte> toutesLesCartes = new ArrayList<>();
         toutesLesCartes.addAll(ChargementCartes.chargerCartesDepuisCSV("serviteurs.csv", "serviteur"));
@@ -212,7 +193,7 @@ public class Main {
         deck.melangerDeck();
     }
 
-    // Ajoute cette méthode pour initialiser les deux decks sans doublon
+    // On fait les deux decks sans doublon
     public static void initialiserDecks(Joueur joueur1, Joueur joueur2) {
         List<Carte> toutesLesCartes = new ArrayList<>();
         toutesLesCartes.addAll(ChargementCartes.chargerCartesDepuisCSV("serviteurs.csv", "serviteur"));
@@ -224,11 +205,9 @@ public class Main {
         Deck deck1 = joueur1.getDeck();
         Deck deck2 = joueur2.getDeck();
 
-        // Premier deck : 30 premières cartes
         for (int i = 0; i < 30 && !toutesLesCartes.isEmpty(); i++) {
             deck1.ajouterCarte(toutesLesCartes.remove(0));
         }
-        // Deuxième deck : 30 suivantes (toujours sans doublon)
         for (int i = 0; i < 30 && !toutesLesCartes.isEmpty(); i++) {
             deck2.ajouterCarte(toutesLesCartes.remove(0));
         }
@@ -236,12 +215,13 @@ public class Main {
         deck2.melangerDeck();
     }
 
+    // Ici le joueur joue une carte de sa main
     public static void jouerCarteDepuisMain(Scanner scanner, Joueur joueur, Joueur adversaire) {
         boolean carteJoueeOuPasse = false;
         while (!carteJoueeOuPasse) {
-            System.out.println("\n* " + joueur.getPseudo() + ", choisissez une carte à jouer (Mana : " + joueur.getHero().getManaCourant() + ")");
+            System.out.println("\n* " + joueur.getPseudo() + ", choisis une carte à jouer (Mana : " + joueur.getHero().getManaCourant() + ")");
             joueur.afficherMain();
-            System.out.print("Entrez le numéro de la carte à jouer (1-" + joueur.getMain().size() + ") ou 0 pour passer : ");
+            System.out.print("Numéro de la carte à jouer (1-" + joueur.getMain().size() + ") ou 0 pour passer : ");
 
             int choix = -1;
             while (choix < 0 || choix > joueur.getMain().size()) {
@@ -249,10 +229,10 @@ public class Main {
                     choix = scanner.nextInt();
                     scanner.nextLine();
                     if (choix < 0 || choix > joueur.getMain().size()) {
-                        System.out.println("x Numéro hors plage, veuillez réessayer.");
+                        System.out.println("x Numéro hors plage, recommence.");
                     }
                 } else {
-                    System.out.println("x Veuillez entrer un nombre entier valide.");
+                    System.out.println("x Mets un nombre entier stp.");
                     scanner.nextLine();
                 }
             }
@@ -263,11 +243,9 @@ public class Main {
             } else if (choix >= 1 && choix <= joueur.getMain().size()) {
                 Carte carteChoisie = joueur.getMain().get(choix - 1);
                 if (carteChoisie.getMana() > joueur.getHero().getManaCourant()) {
-                    System.out.println("x Pas assez de mana pour jouer " + carteChoisie.getNom() + ". Choisissez une autre carte ou passez.");
+                    System.out.println("x Pas assez de mana pour jouer " + carteChoisie.getNom() + ". Choisis une autre carte ou passe.");
                 } else {
-                    System.out.println("Mana avant : " + joueur.getHero().getManaCourant());
-                    joueur.getHero().reduireMana(carteChoisie.getMana()); // Décrémente la mana pour tous les types
-                    System.out.println("Mana après : " + joueur.getHero().getManaCourant());
+                    joueur.getHero().reduireMana(carteChoisie.getMana());
 
                     if (carteChoisie instanceof Serviteur) {
                         joueur.getPlateau().ajouterServiteur((Serviteur) carteChoisie);
@@ -280,9 +258,8 @@ public class Main {
                         Object cible = null;
 
                         if (sort.getEffet() == Sort.TypeEffet.SOIN) {
-                            // Choix entre ses propres serviteurs ou son héros
-                            System.out.println("Choisissez la cible du soin :");
-                            System.out.println("0 - Votre héros (" + joueur.getHero().getNom() + ")");
+                            System.out.println("Choisis la cible du soin :");
+                            System.out.println("0 - Ton héros (" + joueur.getHero().getNom() + ")");
                             for (int i = 0; i < joueur.getPlateau().getServiteurs().size(); i++) {
                                 System.out.println((i + 1) + " - " + joueur.getPlateau().getServiteurs().get(i).getNom());
                             }
@@ -296,12 +273,11 @@ public class Main {
                                 System.out.println("x Cible invalide, le sort est perdu !");
                             }
                         } else if (sort.getEffet() == Sort.TypeEffet.DEGATS) {
-                            // Cible : serviteur adverse ou héros adverse si pas de serviteur
                             if (adversaire.getPlateau().getServiteurs().isEmpty()) {
                                 cible = adversaire.getHero();
                                 System.out.println("Aucun serviteur adverse, le sort cible le héros adverse.");
                             } else {
-                                System.out.println("Choisissez la cible du sort de dégâts :");
+                                System.out.println("Choisis la cible du sort de dégâts :");
                                 for (int i = 0; i < adversaire.getPlateau().getServiteurs().size(); i++) {
                                     System.out.println((i + 1) + " - " + adversaire.getPlateau().getServiteurs().get(i).getNom());
                                 }
