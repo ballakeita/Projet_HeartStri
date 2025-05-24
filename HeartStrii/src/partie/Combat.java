@@ -3,33 +3,25 @@ package partie;
 import carte.Serviteur;
 
 //Cette classe permet de simuler un combat entre deux serviteurs
-public class Combat {
+public class 
+Combat {
 
-public static void lancerCombat(Serviteur s1, Serviteur s2) {
- System.out.println(" Début du combat entre " + s1.getNom() + " et " + s2.getNom());
+public static void lancerCombat(Serviteur attaquant, Serviteur defenseur) {
+    System.out.println("Début du combat entre " + attaquant.getNom() + " et " + defenseur.getNom());
 
- // Combat tour par tour
- while (!s1.estMort() && !s2.estMort()) {
-     // Le premier attaque le second
-     s2.subirDegats(s1.getAttaque());
-     System.out.println(s1.getNom() + " attaque " + s2.getNom() + " ➜ PV restants : " + s2.getVie());
+    // Attaque de l'attaquant
+    System.out.println(attaquant.getNom() + " attaque " + defenseur.getNom() + " ➜ PV restants : " + (defenseur.getVie() - attaquant.getAttaque()));
+    defenseur.subirDegats(attaquant.getAttaque());
 
-     // Si le second est mort, on arrête là
-     if (s2.estMort()) break;
+    // Riposte du défenseur (seulement s'il est encore en vie)
+    if (!defenseur.estMort()) {
+        System.out.println(defenseur.getNom() + " riposte ➜ PV restants : " + (attaquant.getVie() - defenseur.getAttaque()));
+        attaquant.subirDegats(defenseur.getAttaque());
+    }
 
-     // Le second riposte
-     s1.subirDegats(s2.getAttaque());
-     System.out.println(s2.getNom() + " riposte ➜ PV restants : " + s1.getVie());
- }
-
- // Fin du combat : on annonce le vainqueur
- System.out.println("💀 Le combat est terminé !");
- if (s1.estMort()) {
-     System.out.println(s1.getNom() + " est mort !");
- }
- if (s2.estMort()) {
-     System.out.println(s2.getNom() + " est mort !");
- }
+    System.out.println("💀 Le combat est terminé !");
+    if (attaquant.estMort()) System.out.println(attaquant.getNom() + " est mort !");
+    if (defenseur.estMort()) System.out.println(defenseur.getNom() + " est mort !");
 }
 
 }

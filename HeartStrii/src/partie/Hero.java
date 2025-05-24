@@ -52,15 +52,15 @@ public class Hero {
 
     public void augmenterMana() {
         if (manaMax < 10) manaMax++;
-        manaCourant = manaMax;
+        if (manaCourant < manaMax) manaCourant++;
     }
 
     public void reduireMana(int cout) {
         manaCourant -= cout;
     }
 
-    public void setArmeEquipee(Arme arme) {
-        this.armeEquipee = arme;
+    public void setArmeEquipee(carte.Arme carteChoisie) {
+        this.armeEquipee = carteChoisie;
     }
 
     public Arme getArmeEquipee() {
@@ -120,6 +120,7 @@ public class Hero {
         }
 
         manaCourant -= 2; // coût du pouvoir
+        System.out.println("Mana : " + cible.getHero().getManaCourant() + "/" + cible.getHero().getManaMax());
     }
 
 }

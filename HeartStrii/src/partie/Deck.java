@@ -9,11 +9,14 @@ import carte.Carte; // importation de la classe mère
 
 // Le deck contient les cartes du joueur
 public class Deck {
-    private List<Carte> cartes; // On stocke des Cartes (Serviteur, Arme, Sort...)
+    private List<Carte> cartes = new ArrayList<>(); // On stocke des Cartes (Serviteur, Arme, Sort...)
+
+    public List<Carte> getCartes() {
+        return cartes;
+    }
 
     // Constructeur : on initialise la liste vide
     public Deck() {
-        cartes = new ArrayList<>();
     }
 
     // Ajouter une carte dans le deck

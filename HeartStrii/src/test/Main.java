@@ -8,6 +8,8 @@ import java.util.Scanner;
 
 import carte.Carte;
 import carte.Serviteur;
+import carte.Sort;
+import carte.Arme;
 import partie.Combat;
 import partie.Deck;
 import partie.Joueur;
@@ -50,8 +52,7 @@ public class Main {
         System.out.println(joueur2.getPseudo() + " joue le héros " + joueur2.getHero().getNom());
 
         // --- Phase 2 : Création des decks + pioche ---
-        initialiserDeck(joueur1);
-        initialiserDeck(joueur2);
+        initialiserDecks(joueur1, joueur2);
 
         System.out.println("\n🃏 Distribution des cartes de départ...");
         System.out.println(joueur1.getPseudo() + " pioche 3 cartes.");
@@ -89,23 +90,34 @@ public class Main {
     public static void jouerUnTour(Scanner scanner, Joueur joueur, Joueur adversaire) {
         System.out.println("\n🔁 TOUR DE " + joueur.getPseudo());
         System.out.println("❤️ PV de " + joueur.getPseudo() + " (" + joueur.getHero().getNom() + ") : " + joueur.getHero().getPv());
+        System.out.println("📦 Cartes restantes dans le deck : " + joueur.getDeck().getCartes().size());
         joueur.getHero().augmenterMana();
         joueur.piocherCarte();
 
-        jouerCarteDepuisMain(scanner, joueur);
+        jouerCarteDepuisMain(scanner, joueur, adversaire);
+
+        // Affichage des plateaux
+        System.out.println("\nPlateau de " + joueur.getPseudo() + " :");
+        joueur.getPlateau().afficherPlateau();
+        System.out.println("\nPlateau de " + adversaire.getPseudo() + " :");
+        adversaire.getPlateau().afficherPlateau();
 
         if (joueur.getPlateau().getServiteurs().isEmpty()) {
             System.out.println("🛡️ Aucun serviteur à attaquer.");
         } else {
-            System.out.println("\n⚔️ " + joueur.getPseudo() + ", choisissez un serviteur pour attaquer :");
+            System.out.println("\n⚔️ " + joueur.getPseudo() + ", choisissez un serviteur pour attaquer ou 0 pour passer :");
             joueur.getPlateau().afficherPlateau();
 
-            int atk = -1;
-            while (atk < 0 || atk >= joueur.getPlateau().getServiteurs().size()) {
-                System.out.print("Numéro du serviteur : ");
+            int atk = -2;
+            while (atk < -1 || atk >= joueur.getPlateau().getServiteurs().size()) {
+                System.out.print("Numéro du serviteur (ou 0 pour passer) : ");
                 if (scanner.hasNextInt()) {
-                    atk = scanner.nextInt() - 1; // index 0-based
-                    scanner.nextLine(); // consommer la fin de ligne
+                    atk = scanner.nextInt() - 1;
+                    scanner.nextLine();
+                    if (atk == -1) {
+                        System.out.println(joueur.getPseudo() + " passe la phase d'attaque.");
+                        return; // Fin du tour sans attaque
+                    }
                     if (atk < 0 || atk >= joueur.getPlateau().getServiteurs().size()) {
                         System.out.println("❌ Numéro hors plage, veuillez réessayer.");
                     }
@@ -145,6 +157,18 @@ public class Main {
 
                 if (attaquant.estMort()) joueur.getPlateau().getServiteurs().remove(attaquant);
                 if (defenseur.estMort()) adversaire.getPlateau().getServiteurs().remove(defenseur);
+            }
+            // Fin du tour après une attaque
+            return;
+        }
+
+        if (joueur.getHero().getArmeEquipee() != null) {
+            System.out.println("Voulez-vous attaquer avec votre arme ? (o/n)");
+            String reponse = scanner.nextLine();
+            if (reponse.equalsIgnoreCase("o")) {
+                // Ici, tu peux demander la cible (héros adverse ou serviteur adverse)
+                joueur.getHero().attaquerAvecArme(adversaire.getHero());
+                System.out.println("🗡️ " + joueur.getHero().getNom() + " attaque avec son arme !");
             }
         }
     }
@@ -188,7 +212,31 @@ public class Main {
         deck.melangerDeck();
     }
 
-    public static void jouerCarteDepuisMain(Scanner scanner, Joueur joueur) {
+    // Ajoute cette méthode pour initialiser les deux decks sans doublon
+    public static void initialiserDecks(Joueur joueur1, Joueur joueur2) {
+        List<Carte> toutesLesCartes = new ArrayList<>();
+        toutesLesCartes.addAll(ChargementCartes.chargerCartesDepuisCSV("serviteurs.csv", "serviteur"));
+        toutesLesCartes.addAll(ChargementCartes.chargerCartesDepuisCSV("sorts.csv", "sort"));
+        toutesLesCartes.addAll(ChargementCartes.chargerCartesDepuisCSV("armes.csv", "arme"));
+
+        Collections.shuffle(toutesLesCartes);
+
+        Deck deck1 = joueur1.getDeck();
+        Deck deck2 = joueur2.getDeck();
+
+        // Premier deck : 30 premières cartes
+        for (int i = 0; i < 30 && !toutesLesCartes.isEmpty(); i++) {
+            deck1.ajouterCarte(toutesLesCartes.remove(0));
+        }
+        // Deuxième deck : 30 suivantes (toujours sans doublon)
+        for (int i = 0; i < 30 && !toutesLesCartes.isEmpty(); i++) {
+            deck2.ajouterCarte(toutesLesCartes.remove(0));
+        }
+        deck1.melangerDeck();
+        deck2.melangerDeck();
+    }
+
+    public static void jouerCarteDepuisMain(Scanner scanner, Joueur joueur, Joueur adversaire) {
         boolean carteJoueeOuPasse = false;
         while (!carteJoueeOuPasse) {
             System.out.println("\n🎮 " + joueur.getPseudo() + ", choisissez une carte à jouer (Mana : " + joueur.getHero().getManaCourant() + ")");
@@ -213,14 +261,65 @@ public class Main {
                 System.out.println(joueur.getPseudo() + " passe son tour.");
                 carteJoueeOuPasse = true;
             } else if (choix >= 1 && choix <= joueur.getMain().size()) {
-                Serviteur choisi = (Serviteur) joueur.getMain().get(choix - 1);
-                if (choisi.getMana() > joueur.getHero().getManaCourant()) {
-                    System.out.println("❌ Pas assez de mana pour jouer " + choisi.getNom() + ". Choisissez une autre carte ou passez.");
+                Carte carteChoisie = joueur.getMain().get(choix - 1);
+                if (carteChoisie.getMana() > joueur.getHero().getManaCourant()) {
+                    System.out.println("❌ Pas assez de mana pour jouer " + carteChoisie.getNom() + ". Choisissez une autre carte ou passez.");
                 } else {
-                    joueur.getHero().reduireMana(choisi.getMana());
-                    joueur.getPlateau().ajouterServiteur(choisi);
-                    joueur.getMain().remove(choisi);
-                    System.out.println("✅ " + choisi.getNom() + " est posé sur le plateau !");
+                    System.out.println("Mana avant : " + joueur.getHero().getManaCourant());
+                    joueur.getHero().reduireMana(carteChoisie.getMana()); // Décrémente la mana pour tous les types
+                    System.out.println("Mana après : " + joueur.getHero().getManaCourant());
+
+                    if (carteChoisie instanceof Serviteur) {
+                        joueur.getPlateau().ajouterServiteur((Serviteur) carteChoisie);
+                        System.out.println("✅ " + carteChoisie.getNom() + " est posé sur le plateau !");
+                    } else if (carteChoisie instanceof Arme) {
+                        joueur.getHero().setArmeEquipee((Arme) carteChoisie);
+                        System.out.println("🗡️ " + joueur.getHero().getNom() + " s'équipe de " + carteChoisie.getNom());
+                    } else if (carteChoisie instanceof Sort) {
+                        Sort sort = (Sort) carteChoisie;
+                        Object cible = null;
+
+                        if (sort.getEffet() == Sort.TypeEffet.SOIN) {
+                            // Choix entre ses propres serviteurs ou son héros
+                            System.out.println("Choisissez la cible du soin :");
+                            System.out.println("0 - Votre héros (" + joueur.getHero().getNom() + ")");
+                            for (int i = 0; i < joueur.getPlateau().getServiteurs().size(); i++) {
+                                System.out.println((i + 1) + " - " + joueur.getPlateau().getServiteurs().get(i).getNom());
+                            }
+                            int choixCible = scanner.nextInt();
+                            scanner.nextLine();
+                            if (choixCible == 0) {
+                                cible = joueur.getHero();
+                            } else if (choixCible > 0 && choixCible <= joueur.getPlateau().getServiteurs().size()) {
+                                cible = joueur.getPlateau().getServiteurs().get(choixCible - 1);
+                            } else {
+                                System.out.println("❌ Cible invalide, le sort est perdu !");
+                            }
+                        } else if (sort.getEffet() == Sort.TypeEffet.DEGATS) {
+                            // Cible : serviteur adverse ou héros adverse si pas de serviteur
+                            if (adversaire.getPlateau().getServiteurs().isEmpty()) {
+                                cible = adversaire.getHero();
+                                System.out.println("Aucun serviteur adverse, le sort cible le héros adverse.");
+                            } else {
+                                System.out.println("Choisissez la cible du sort de dégâts :");
+                                for (int i = 0; i < adversaire.getPlateau().getServiteurs().size(); i++) {
+                                    System.out.println((i + 1) + " - " + adversaire.getPlateau().getServiteurs().get(i).getNom());
+                                }
+                                int choixCible = scanner.nextInt();
+                                scanner.nextLine();
+                                if (choixCible > 0 && choixCible <= adversaire.getPlateau().getServiteurs().size()) {
+                                    cible = adversaire.getPlateau().getServiteurs().get(choixCible - 1);
+                                } else {
+                                    System.out.println("❌ Cible invalide, le sort est perdu !");
+                                }
+                            }
+                        }
+
+                        if (cible != null) {
+                            sort.appliquerEffet(cible);
+                        }
+                    }
+                    joueur.getMain().remove(carteChoisie);
                     carteJoueeOuPasse = true;
                 }
             }
