@@ -73,8 +73,15 @@ public class Main {
         joueur.getHero().augmenterMana();
         joueur.piocherCarte();
 
-        // Ici le joueur peut jouer une carte de sa main
         jouerCarteDepuisMain(scanner, joueur, adversaire);
+
+        // Affichage des plateaux avant la phase d'attaque
+        System.out.println("\nPlateau de " + joueur.getPseudo() + " :");
+        joueur.getPlateau().afficherPlateau();
+        System.out.println("PV du héros " + joueur.getHero().getNom() + " : " + joueur.getHero().getPv());
+        System.out.println("\nPlateau de " + adversaire.getPseudo() + " :");
+        adversaire.getPlateau().afficherPlateau();
+        System.out.println("PV du héros " + adversaire.getHero().getNom() + " : " + adversaire.getHero().getPv());
 
         // Phase d'attaque avec les serviteurs
         if (joueur.getPlateau().getServiteurs().isEmpty()) {
@@ -83,12 +90,17 @@ public class Main {
             System.out.println("\n> " + joueur.getPseudo() + ", choisis un serviteur pour attaquer ou tape 0 pour passer :");
             joueur.getPlateau().afficherPlateau();
 
-            int atk = -1;
-            while (atk < 0 || atk >= joueur.getPlateau().getServiteurs().size()) {
+            int atk = -2;
+            while (atk < -1 || atk >= joueur.getPlateau().getServiteurs().size()) {
                 System.out.print("Numéro du serviteur : ");
                 if (scanner.hasNextInt()) {
-                    atk = scanner.nextInt() - 1;
+                    int saisie = scanner.nextInt();
                     scanner.nextLine();
+                    if (saisie == 0) {
+                        atk = -1; // On passe la phase d'attaque
+                    } else {
+                        atk = saisie - 1;
+                    }
                     if (atk < -1 || atk >= joueur.getPlateau().getServiteurs().size()) {
                         System.out.println("x Numéro hors plage, recommence.");
                     }
@@ -149,6 +161,21 @@ public class Main {
             }
         } else {
             System.out.println("\nPas assez de mana pour utiliser le pouvoir spécial.");
+        }
+
+        // Si le héros a une arme équipée, on propose de l'utiliser
+        if (joueur.getHero().getArmeEquipee() != null) {
+            System.out.println("\nTu as une arme équipée : " + joueur.getHero().getArmeEquipee().getNom() +
+                " (" + joueur.getHero().getArmeEquipee().getAttaque() + "/" + joueur.getHero().getArmeEquipee().getDurabilite() + ")");
+            System.out.println("Tape & pour attaquer le héros adverse avec ton arme, ou appuie sur Entrée pour passer.");
+            String choixArme = scanner.nextLine();
+            if (choixArme.trim().equals("&")) {
+                joueur.getHero().attaquerAvecArme(adversaire.getHero());
+                System.out.println("> Tu attaques le héros adverse avec ton arme !");
+                System.out.println("PV du héros " + adversaire.getHero().getNom() + " : " + adversaire.getHero().getPv());
+            } else {
+                System.out.println(joueur.getPseudo() + " n'utilise pas son arme.");
+            }
         }
     }
 

@@ -75,9 +75,9 @@ public class Hero {
     }
 
     // Permet au héros d'attaquer avec son arme
-    public void attaquerAvecArme(Hero cible) {
+    public void attaquerAvecArme(Hero hero) {
         if (armeEquipee != null) {
-            cible.recevoirDegats(armeEquipee.getAttaque());
+            hero.recevoirDegats(armeEquipee.getAttaque());
             armeEquipee.utiliser();
             if (armeEquipee.estDetruite()) {
                 armeEquipee = null;
